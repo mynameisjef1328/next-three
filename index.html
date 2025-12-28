@@ -1,1 +1,1101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#111111" />
+  <title>Next Three</title>
 
+  <style>
+    :root{
+      --bg: #0f0f10;
+      --card: rgba(255,255,255,0.06);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.62);
+      --line: rgba(255,255,255,0.10);
+      --focus: rgba(255,255,255,0.22);
+      --good: rgba(120,255,180,0.95);
+      --danger: rgba(255,120,120,0.95);
+      --shadow: 0 10px 40px rgba(0,0,0,0.45);
+      --radius: 16px;
+      --radius2: 12px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    *{ box-sizing: border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      background:
+        radial-gradient(1000px 700px at 20% 0%, rgba(255,255,255,0.07), transparent 55%),
+        radial-gradient(900px 600px at 90% 15%, rgba(255,255,255,0.05), transparent 50%),
+        var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .wrap{
+      width: min(680px, 92vw);
+      margin: 28px auto 44px auto;
+      display:flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .logo{
+      width: 40px;
+      height: 40px;
+      display:grid;
+      place-items:center;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--line);
+      font-weight: 750;
+      letter-spacing: 0.5px;
+      flex: 0 0 auto;
+    }
+
+    .brandText{
+      min-width: 0;
+    }
+
+    .brandText h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: 0.2px;
+    }
+
+    .sub{
+      margin: 2px 0 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.04));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .addRow{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+    }
+
+    input{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: var(--radius2);
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus{
+      border-color: var(--focus);
+    }
+
+    button{
+      font-family: var(--font);
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.07);
+      border-radius: var(--radius2);
+      padding: 12px 14px;
+      cursor:pointer;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    button:active{ transform: scale(0.98); }
+
+    button:focus-visible{
+      outline: 2px solid rgba(255,255,255,0.22);
+      outline-offset: 2px;
+    }
+
+    button:disabled{
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .iconBtn{
+      width: 42px;
+      height: 42px;
+      padding:0;
+      display:grid;
+      place-items:center;
+      border-radius: 14px;
+      flex: 0 0 auto;
+    }
+
+    .ghostBtn{
+      background: transparent;
+    }
+    .ghostBtn:hover{
+      background: rgba(255,255,255,0.06);
+    }
+    .ghostBtn.danger{
+      color: var(--danger);
+      border-color: rgba(255,120,120,0.25);
+    }
+    .ghostBtn.full{
+      width: 100%;
+    }
+
+    .hintRow{
+      margin-top: 10px;
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      align-items: center;
+    }
+
+    .hint{
+      min-height: 18px;
+    }
+
+    .pill{
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.2);
+      white-space: nowrap;
+    }
+
+    .tasksHeader{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .setMeta{
+      display:flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .metaLabel{
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .metaValue{
+      font-size: 14px;
+      font-weight: 650;
+      opacity: 0.95;
+    }
+
+    .taskList{
+      list-style: none;
+      padding: 0;
+      margin: 6px 0 0 0;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .taskItem{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border-radius: var(--radius2);
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .taskLeft{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .check{
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      display:grid;
+      place-items:center;
+      flex: 0 0 auto;
+      transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+    }
+
+    .check::before{
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: transparent;
+      transition: background 140ms ease;
+    }
+
+    .taskText{
+      font-size: 14px;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+
+    .taskRight{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .smallBtn{
+      padding: 10px 11px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .taskItem.done{
+      background: rgba(120,255,180,0.06);
+      border-color: rgba(120,255,180,0.18);
+    }
+
+    .taskItem.done .check{
+      border-color: rgba(120,255,180,0.35);
+      background: rgba(120,255,180,0.10);
+      transform: scale(1.02);
+    }
+
+    .taskItem.done .check::before{
+      background: rgba(120,255,180,0.95);
+    }
+
+    .taskItem.done .taskText{
+      color: rgba(255,255,255,0.72);
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+      text-decoration-color: rgba(255,255,255,0.22);
+    }
+
+    .taskItem.snap{
+      transform: scale(1.01);
+    }
+
+    .completeBanner{
+      margin-top: 12px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(120,255,180,0.20);
+      background: rgba(120,255,180,0.08);
+      padding: 12px;
+      display:none;
+      align-items:center;
+      gap: 12px;
+    }
+
+    .completeBanner.show{
+      display:flex;
+      animation: bannerIn 200ms ease-out;
+    }
+
+    @keyframes bannerIn{
+      from { opacity:0; transform: translateY(4px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+
+    .badge{
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display:grid;
+      place-items:center;
+      border: 1px solid rgba(120,255,180,0.28);
+      background: rgba(0,0,0,0.18);
+      color: rgba(120,255,180,0.95);
+      font-weight: 800;
+    }
+
+    .bannerTitle{
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .bannerSub{
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 1px;
+    }
+
+    .history .collapseBtn{
+      width: 100%;
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      padding: 12px;
+      border-radius: var(--radius2);
+      background: rgba(0,0,0,0.18);
+    }
+
+    .tiny{
+      color: var(--muted);
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.15);
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .historyBody{
+      margin-top: 10px;
+      padding: 6px 2px 2px 2px;
+    }
+
+    .historyList{
+      list-style:none;
+      padding:0;
+      margin: 0;
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .historyItem{
+      padding: 10px 12px;
+      border-radius: var(--radius2);
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.14);
+      color: rgba(255,255,255,0.78);
+      font-size: 13px;
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .historyActions{
+      margin-top: 10px;
+      display:flex;
+      justify-content:flex-end;
+    }
+
+    .foot{
+      text-align:center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 6px 0 0 0;
+    }
+
+    .hidden{ display:none !important; }
+
+    .srOnly{
+      position:absolute;
+      width:1px;height:1px;
+      padding:0;margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;border:0;
+    }
+
+    /* Modal */
+    .modalBackdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+    }
+
+    .modal{
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(520px, 92vw);
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(25,25,26,0.98), rgba(18,18,19,0.98));
+      box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+      padding: 14px;
+    }
+
+    .modalTop{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modalTop h2{
+      margin:0;
+      font-size: 16px;
+    }
+
+    .modalBody{
+      padding-top: 12px;
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .sep{
+      border:0;
+      border-top: 1px solid var(--line);
+      margin: 6px 0;
+    }
+
+    .settingRow{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .settingTitle{
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .settingDesc{
+      color: var(--muted);
+      font-size: 12.5px;
+      margin-top: 2px;
+    }
+
+    /* Switch */
+    .switch{
+      position: relative;
+      display:inline-block;
+      width: 48px;
+      height: 28px;
+      flex: 0 0 auto;
+    }
+
+    .switch input{ display:none; }
+
+    .slider{
+      position:absolute;
+      cursor:pointer;
+      top:0;left:0;right:0;bottom:0;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      transition: 120ms ease;
+    }
+
+    .slider:before{
+      position:absolute;
+      content:"";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.85);
+      border-radius: 999px;
+      transition: 120ms ease;
+    }
+
+    .switch input:checked + .slider{
+      background: rgba(120,255,180,0.18);
+      border-color: rgba(120,255,180,0.26);
+    }
+
+    .switch input:checked + .slider:before{
+      transform: translate(20px, -50%);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap" aria-label="Next Three app">
+    <header class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">3</div>
+        <div class="brandText">
+          <h1>Next Three</h1>
+          <p class="sub" id="subline">Keep it small. Finish what matters.</p>
+        </div>
+      </div>
+
+      <button class="iconBtn" id="openSettingsBtn" aria-label="Open settings" title="Settings">
+        <span aria-hidden="true">⚙︎</span>
+      </button>
+    </header>
+
+    <section class="card" aria-label="Add a task">
+      <form id="addForm" autocomplete="off">
+        <label class="srOnly" for="taskInput">Add a task</label>
+        <div class="addRow">
+          <input id="taskInput" type="text" inputmode="text" placeholder="Add one thing…" maxlength="80" />
+          <button id="addBtn" type="submit">Add</button>
+        </div>
+        <div class="hintRow">
+          <span class="hint" id="hintText"></span>
+          <span class="pill" id="slotsPill" aria-label="Slots remaining"></span>
+        </div>
+      </form>
+    </section>
+
+    <section class="card tasks" aria-label="Your three tasks">
+      <div class="tasksHeader">
+        <div class="setMeta">
+          <span class="metaLabel">Set</span>
+          <span class="metaValue" id="setNumber">1</span>
+        </div>
+
+        <button class="ghostBtn hidden" id="nextSetBtn" type="button">
+          Load next three
+        </button>
+      </div>
+
+      <ul class="taskList" id="taskList" aria-live="polite"></ul>
+
+      <div class="completeBanner" id="completeBanner" aria-live="polite" role="status">
+        <div class="badge" aria-hidden="true">✓</div>
+        <div class="bannerText">
+          <div class="bannerTitle">Set complete</div>
+          <div class="bannerSub">Nice. Ready for the next three.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card history" aria-label="Completed history">
+      <button class="collapseBtn" id="toggleHistoryBtn" type="button" aria-expanded="false">
+        <span>History</span>
+        <span class="tiny" id="historyCount">0</span>
+      </button>
+
+      <div class="historyBody" id="historyBody" hidden>
+        <ul class="historyList" id="historyList"></ul>
+        <div class="historyActions">
+          <button class="ghostBtn danger" id="clearHistoryBtn" type="button">Clear history</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span class="footTiny">Local-only, calm by design.</span>
+    </footer>
+  </main>
+
+  <div class="modalBackdrop hidden" id="modalBackdrop" role="presentation"></div>
+  <section class="modal hidden" id="settingsModal" role="dialog" aria-modal="true" aria-label="Settings">
+    <header class="modalTop">
+      <h2>Settings</h2>
+      <button class="iconBtn" id="closeSettingsBtn" aria-label="Close settings" title="Close">
+        <span aria-hidden="true">✕</span>
+      </button>
+    </header>
+
+    <div class="modalBody">
+      <div class="settingRow">
+        <div class="settingText">
+          <div class="settingTitle">Sounds</div>
+          <div class="settingDesc">Soft click on check, gentle chime on set complete.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="soundToggle" />
+          <span class="slider" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <div class="settingRow">
+        <div class="settingText">
+          <div class="settingTitle">Haptics</div>
+          <div class="settingDesc">Tiny vibration when supported.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="hapticToggle" />
+          <span class="slider" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <div class="settingRow">
+        <div class="settingText">
+          <div class="settingTitle">Auto-advance</div>
+          <div class="settingDesc">Automatically load the next set after completion.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="autoAdvanceToggle" />
+          <span class="slider" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <hr class="sep" />
+
+      <button class="ghostBtn danger full" id="resetAllBtn" type="button">
+        Reset all data
+      </button>
+    </div>
+  </section>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "nextThree_singlefile_v1";
+
+    const els = {
+      addForm: document.getElementById("addForm"),
+      taskInput: document.getElementById("taskInput"),
+      addBtn: document.getElementById("addBtn"),
+      taskList: document.getElementById("taskList"),
+      hintText: document.getElementById("hintText"),
+      slotsPill: document.getElementById("slotsPill"),
+      setNumber: document.getElementById("setNumber"),
+      completeBanner: document.getElementById("completeBanner"),
+      nextSetBtn: document.getElementById("nextSetBtn"),
+
+      toggleHistoryBtn: document.getElementById("toggleHistoryBtn"),
+      historyBody: document.getElementById("historyBody"),
+      historyList: document.getElementById("historyList"),
+      historyCount: document.getElementById("historyCount"),
+      clearHistoryBtn: document.getElementById("clearHistoryBtn"),
+
+      openSettingsBtn: document.getElementById("openSettingsBtn"),
+      closeSettingsBtn: document.getElementById("closeSettingsBtn"),
+      modalBackdrop: document.getElementById("modalBackdrop"),
+      settingsModal: document.getElementById("settingsModal"),
+      soundToggle: document.getElementById("soundToggle"),
+      hapticToggle: document.getElementById("hapticToggle"),
+      autoAdvanceToggle: document.getElementById("autoAdvanceToggle"),
+      resetAllBtn: document.getElementById("resetAllBtn"),
+    };
+
+    const defaultState = {
+      set: 1,
+      tasks: [],    // { id, text, done }
+      history: [],  // { text, completedAt, set }
+      settings: {
+        sound: true,
+        haptics: true,
+        autoAdvance: false,
+      },
+    };
+
+    let state = loadState();
+    renderAll();
+
+    els.addForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = (els.taskInput.value || "").trim();
+      if (!text) return;
+
+      if (!canAddTask()) {
+        softHint("Finish this set to unlock the next three.");
+        return;
+      }
+
+      addTask(text);
+      els.taskInput.value = "";
+      els.taskInput.focus();
+    });
+
+    els.nextSetBtn.addEventListener("click", () => startNextSet());
+
+    els.toggleHistoryBtn.addEventListener("click", () => {
+      const expanded = els.toggleHistoryBtn.getAttribute("aria-expanded") === "true";
+      els.toggleHistoryBtn.setAttribute("aria-expanded", String(!expanded));
+      els.historyBody.hidden = expanded;
+    });
+
+    els.clearHistoryBtn.addEventListener("click", () => {
+      if (!state.history.length) return;
+      const ok = confirm("Clear history?");
+      if (!ok) return;
+      state.history = [];
+      persist();
+      renderHistory();
+    });
+
+    els.openSettingsBtn.addEventListener("click", () => openSettings());
+    els.closeSettingsBtn.addEventListener("click", () => closeSettings());
+    els.modalBackdrop.addEventListener("click", () => closeSettings());
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeSettings();
+    });
+
+    els.soundToggle.addEventListener("change", () => {
+      state.settings.sound = !!els.soundToggle.checked;
+      persist();
+    });
+
+    els.hapticToggle.addEventListener("change", () => {
+      state.settings.haptics = !!els.hapticToggle.checked;
+      persist();
+    });
+
+    els.autoAdvanceToggle.addEventListener("change", () => {
+      state.settings.autoAdvance = !!els.autoAdvanceToggle.checked;
+      persist();
+    });
+
+    els.resetAllBtn.addEventListener("click", () => {
+      const ok = confirm("Reset everything? This cannot be undone.");
+      if (!ok) return;
+      state = clone(defaultState);
+      persist();
+      renderAll();
+      closeSettings();
+    });
+
+    function canAddTask() {
+      return state.tasks.length < 3 && !isSetComplete();
+    }
+
+    function addTask(text) {
+      const task = {
+        id: makeId(),
+        text,
+        done: false,
+      };
+      state.tasks.push(task);
+      persist();
+      renderAll();
+    }
+
+    function toggleTask(id) {
+      const t = state.tasks.find(x => x.id === id);
+      if (!t) return;
+
+      t.done = !t.done;
+      persist();
+
+      if (t.done) {
+        playCheckFeedback();
+      }
+
+      renderAll();
+
+      if (isSetComplete()) {
+        onSetComplete();
+      }
+    }
+
+    function deleteTask(id) {
+      if (isSetComplete()) return;
+      state.tasks = state.tasks.filter(t => t.id !== id);
+      persist();
+      renderAll();
+    }
+
+    function isSetComplete() {
+      return state.tasks.length === 3 && state.tasks.every(t => t.done);
+    }
+
+    function onSetComplete() {
+      const now = new Date().toISOString();
+      state.tasks.forEach(t => {
+        state.history.unshift({ text: t.text, completedAt: now, set: state.set });
+      });
+      persist();
+      renderHistory();
+
+      showCompleteBanner(true);
+      els.nextSetBtn.classList.remove("hidden");
+
+      playSetCompleteFeedback();
+
+      if (state.settings.autoAdvance) {
+        window.setTimeout(() => startNextSet(), 950);
+      }
+    }
+
+    function startNextSet() {
+      state.set += 1;
+      state.tasks = [];
+      persist();
+      showCompleteBanner(false);
+      els.nextSetBtn.classList.add("hidden");
+      renderAll();
+      els.taskInput.focus();
+    }
+
+    function renderAll() {
+      renderHeader();
+      renderTasks();
+      renderComposerState();
+      renderHistory();
+      renderSettingsUI();
+    }
+
+    function renderHeader() {
+      els.setNumber.textContent = String(state.set);
+    }
+
+    function renderTasks() {
+      els.taskList.innerHTML = "";
+
+      const slots = 3;
+      for (let i = 0; i < slots; i++) {
+        const task = state.tasks[i];
+
+        const li = document.createElement("li");
+        li.className = "taskItem" + (task?.done ? " done" : "");
+
+        const left = document.createElement("div");
+        left.className = "taskLeft";
+
+        const check = document.createElement("button");
+        check.type = "button";
+        check.className = "check";
+        check.setAttribute("aria-label", task ? (task.done ? "Mark as not done" : "Mark as done") : "Empty slot");
+        check.disabled = !task;
+        check.addEventListener("click", () => task && toggleTask(task.id));
+
+        const text = document.createElement("div");
+        text.className = "taskText";
+        text.textContent = task ? task.text : "Empty slot";
+        if (!task) {
+          text.style.color = "rgba(255,255,255,0.45)";
+        }
+
+        left.appendChild(check);
+        left.appendChild(text);
+
+        const right = document.createElement("div");
+        right.className = "taskRight";
+
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "smallBtn ghostBtn";
+        del.textContent = "Remove";
+        del.disabled = !task || isSetComplete();
+        del.addEventListener("click", () => task && deleteTask(task.id));
+
+        right.appendChild(del);
+
+        li.appendChild(left);
+        li.appendChild(right);
+
+        els.taskList.appendChild(li);
+
+        if (task && task.done) {
+          // no-op, styling handles
+        }
+      }
+
+      showCompleteBanner(isSetComplete());
+    }
+
+    function renderComposerState() {
+      const remainingSlots = Math.max(0, 3 - state.tasks.length);
+
+      if (isSetComplete()) {
+        els.slotsPill.textContent = "3/3 done";
+      } else {
+        els.slotsPill.textContent = `${remainingSlots} slot${remainingSlots === 1 ? "" : "s"} left`;
+      }
+
+      const filled = state.tasks.length === 3;
+      const complete = isSetComplete();
+
+      if (complete) {
+        els.taskInput.disabled = true;
+        els.addBtn.disabled = true;
+        els.hintText.textContent = "Set complete. Load your next three.";
+        els.nextSetBtn.classList.remove("hidden");
+      } else if (filled) {
+        els.taskInput.disabled = true;
+        els.addBtn.disabled = true;
+        els.hintText.textContent = "Finish all three to unlock your next set.";
+      } else {
+        els.taskInput.disabled = false;
+        els.addBtn.disabled = false;
+        els.hintText.textContent = remainingSlots === 3
+          ? "Pick what matters most, then protect your focus."
+          : "Keep it realistic. Keep it finishable.";
+        els.nextSetBtn.classList.add("hidden");
+      }
+    }
+
+    function renderHistory() {
+      els.historyCount.textContent = String(state.history.length);
+      els.historyList.innerHTML = "";
+
+      const max = 30;
+      const items = state.history.slice(0, max);
+
+      for (const h of items) {
+        const li = document.createElement("li");
+        li.className = "historyItem";
+
+        const left = document.createElement("span");
+        left.textContent = h.text;
+
+        const right = document.createElement("span");
+        right.style.color = "rgba(255,255,255,0.50)";
+        right.style.fontSize = "12px";
+        right.textContent = `Set ${h.set}`;
+
+        li.appendChild(left);
+        li.appendChild(right);
+        els.historyList.appendChild(li);
+      }
+    }
+
+    function renderSettingsUI() {
+      els.soundToggle.checked = !!state.settings.sound;
+      els.hapticToggle.checked = !!state.settings.haptics;
+      els.autoAdvanceToggle.checked = !!state.settings.autoAdvance;
+    }
+
+    function showCompleteBanner(show) {
+      if (show) els.completeBanner.classList.add("show");
+      else els.completeBanner.classList.remove("show");
+    }
+
+    let hintTimer = null;
+    function softHint(msg) {
+      els.hintText.textContent = msg;
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(() => renderComposerState(), 1400);
+    }
+
+    function openSettings() {
+      els.settingsModal.classList.remove("hidden");
+      els.modalBackdrop.classList.remove("hidden");
+    }
+
+    function closeSettings() {
+      els.settingsModal.classList.add("hidden");
+      els.modalBackdrop.classList.add("hidden");
+    }
+
+    function persist() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return clone(defaultState);
+
+      try {
+        const parsed = JSON.parse(raw);
+        return {
+          ...clone(defaultState),
+          ...parsed,
+          settings: { ...clone(defaultState.settings), ...(parsed.settings || {}) },
+          tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
+          history: Array.isArray(parsed.history) ? parsed.history : [],
+        };
+      } catch {
+        return clone(defaultState);
+      }
+    }
+
+    function clone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function makeId() {
+      if (crypto && crypto.randomUUID) return crypto.randomUUID();
+      return String(Date.now()) + Math.random().toString(16).slice(2);
+    }
+
+    /* Feedback: calm, short, optional */
+    function playCheckFeedback() {
+      snapTaskItem();
+      haptic(10);
+      if (!state.settings.sound) return;
+      softTone([
+        { f: 660, t: 0.04, a: 0.035 },
+        { f: 880, t: 0.03, a: 0.025 },
+      ]);
+    }
+
+    function playSetCompleteFeedback() {
+      haptic(18);
+      if (!state.settings.sound) return;
+      softTone([
+        { f: 523.25, t: 0.08, a: 0.035 },
+        { f: 659.25, t: 0.08, a: 0.030 },
+        { f: 783.99, t: 0.10, a: 0.028 },
+      ], 0.03);
+    }
+
+    function snapTaskItem() {
+      // Tiny visual "snap" on the first done item we can find in DOM
+      const firstDone = document.querySelector(".taskItem.done");
+      if (!firstDone) return;
+      firstDone.classList.add("snap");
+      window.setTimeout(() => firstDone.classList.remove("snap"), 120);
+    }
+
+    function haptic(ms) {
+      if (!state.settings.haptics) return;
+      if (navigator.vibrate) navigator.vibrate(ms);
+    }
+
+    let audioCtx = null;
+
+    function softTone(notes, gap = 0.02) {
+      // Mobile browsers require a user gesture before audio context works.
+      // These tones are only called after user taps a button.
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        const now = audioCtx.currentTime;
+        let start = now;
+
+        for (const n of notes) {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const filter = audioCtx.createBiquadFilter();
+
+          osc.type = "sine";
+          osc.frequency.value = n.f;
+
+          filter.type = "lowpass";
+          filter.frequency.value = 1600;
+
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(n.a, start + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + n.t);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(start);
+          osc.stop(start + n.t);
+
+          start += n.t + gap;
+        }
+      } catch {
+        // no-op
+      }
+    }
+  </script>
+</body>
+</html>
